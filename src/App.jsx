@@ -3,6 +3,7 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Registration from "./components/Registration";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,6 +32,9 @@ function App() {
           path="/login"
           element={<Login/>}
           />
+          <Route
+          path="/registration"
+          element={<Registration/>}/>
         </Routes>
       </Router>
     </>
