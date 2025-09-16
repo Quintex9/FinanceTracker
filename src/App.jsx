@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Registration from "./components/Registration";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,10 +19,7 @@ function App() {
             element={
               <div className="container mt-4">
                 {!isLoggedIn ? (
-                  <h3>
-                    Tento projekt nepoužíva žiadne dummy data preto je potrebné
-                    sa prihlásiť/registrovať
-                  </h3>
+                  <Dashboard/>
                 ) : (
                   <h2>Welcome to your Finance Dashboard 💰</h2>
                 )}

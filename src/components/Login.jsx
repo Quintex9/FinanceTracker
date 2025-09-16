@@ -9,18 +9,35 @@ export default function Login({ setIsLoggedIn }) {
 
   const handleRegistration = () => navigate("/registration");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Tu by si pripojil backend overenie
-    if (email && password) {
-      setIsLoggedIn(true);
-    } else {
-      alert("Please enter email and password");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert("Login successful ✅");
+        setIsLoggedIn(true);
+      } else {
+        alert(data.message || "Login failed ❌");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Server error ❌");
     }
   };
 
   return (
-    <div className="card p-4 shadow-sm" style={{ maxWidth: "400px", margin: "auto"}}>
+    <div
+      className="card p-4 shadow-sm"
+      style={{ maxWidth: "400px", margin: "auto" }}
+    >
       <h3 className="mb-3">Login</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
@@ -41,7 +58,16 @@ export default function Login({ setIsLoggedIn }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <p>Nemáš účet ? <button type="button" className="btn btn-light" onClick={handleRegistration}>Registruj sa</button></p>
+        <p>
+          Nemáš účet ?{" "}
+          <button
+            type="button"
+            className="btn btn-light"
+            onClick={handleRegistration}
+          >
+            Registruj sa
+          </button>
+        </p>
         <button type="submit" className="btn btn-primary w-100">
           Log in
         </button>
