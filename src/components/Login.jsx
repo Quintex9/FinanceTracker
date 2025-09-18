@@ -24,6 +24,7 @@ export default function Login({ setIsLoggedIn }) {
       if (res.ok && data.success) {
         alert("Login successful ✅");
         setIsLoggedIn(true);
+        navigate("/");
       } else {
         alert(data.message || "Login failed ❌");
       }
