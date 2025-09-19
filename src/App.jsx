@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
@@ -8,6 +8,14 @@ import Dashboard from "./components/Dashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+   useEffect(() => {
+    fetch("http://localhost:5000/api/check-auth", {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => setIsLoggedIn(data.loggedIn));
+  }, []);
 
   return (
     <>
@@ -19,7 +27,7 @@ function App() {
             element={
               <div className="container mt-4">
                 {!isLoggedIn ? (
-                  <Dashboard/>
+                  <Dashboard />
                 ) : (
                   <h2>Welcome to your Finance Dashboard 💰</h2>
                 )}
@@ -27,12 +35,10 @@ function App() {
             }
           />
           <Route
-          path="/login"
-          element={<Login setIsLoggedIn={setIsLoggedIn}/>}
+            path="/login"
+            element={<Login setIsLoggedIn={setIsLoggedIn} />}
           />
-          <Route
-          path="/registration"
-          element={<Registration/>}/>
+          <Route path="/registration" element={<Registration />} />
         </Routes>
       </Router>
     </>

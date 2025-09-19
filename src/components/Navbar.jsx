@@ -5,10 +5,14 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
 
   const handleLoginClick = () => navigate("/login");
 
-  const handleLougoutClick = () => {
-    setIsLoggedIn(false);
-    navigate("/");
-  };
+  const handleLogoutClick = async () => {
+  await fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+  setIsLoggedIn(false);
+};
+
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary mb-5">
@@ -43,7 +47,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             </li>
           </ul>
           {!isLoggedIn  ? (<button type="button" className="btn btn-light" onClick={handleLoginClick}>Log in</button>) :
-          (<button type="button" className="btn btn-danger" onClick={handleLougoutClick}>Log out</button>)}
+          (<button type="button" className="btn btn-danger" onClick={handleLogoutClick}>Log out</button>)}
         </div>
       </div>
     </nav>

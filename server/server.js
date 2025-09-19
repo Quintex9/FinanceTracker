@@ -2,20 +2,34 @@ import express from "express";
 import cors from "cors";
 import mysql from "mysql2";
 import bcrypt from "bcrypt";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT;
 
-app.use(cors());
+const JWT_SECRET = process.env.JWT_SECRET;
+
+app.use(cors(
+    {
+        origin: "http://localhost:5173",  //FE
+        credentials: true,                // Posielanie cookies
+    }
+));
 app.use(express.json());
+app.use(cookieParser());
 
 // DB pripojenie
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "financetracer"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
 });
+
 
 db.connect(err => {
     if (err) console.error("DB error:", err);
@@ -56,9 +70,37 @@ app.post("/api/login", (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
+        const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict"
+        });
+
         res.json({ success: true, message: "Login successful", userId: user.id });
     });
 });
+
+// Check-auth
+app.get("/api/check-auth", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.json({ loggedIn: false });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.json({ loggedIn: true, user: decoded });
+  } catch (err) {
+    res.json({ loggedIn: false });
+  }
+});
+
+// Logout
+app.post("/api/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ success: true, message: "Logged out" });
+});
+
 
 // ---------------- TRANSACTIONS ----------------
 
