@@ -110,7 +110,7 @@ app.post("/api/transactions", (req, res) => {
     db.query(
         "INSERT INTO transactions (user_id, title, amount, created_at) VALUES (?, ?, ?, ?)",
         [userId, title, amount, created_at],
-        (err) => {
+        (err, result) => {
             if (err) return res.status(500).json({ message: "DB error" });
             res.json({
                 success: true,

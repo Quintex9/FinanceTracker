@@ -9,13 +9,19 @@ import LoggedInDashboard from "./components/LoggedInDashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(null);
 
-   useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost:5000/api/check-auth", {
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => setIsLoggedIn(data.loggedIn));
+      .then((data) => {
+        setIsLoggedIn(data.loggedIn);
+        if (data.loggedIn && data.user) {
+          setUserId(data.user.id);
+        }
+      });
   }, []);
 
   return (
@@ -27,11 +33,7 @@ function App() {
             path="/"
             element={
               <div className="container mt-4">
-                {!isLoggedIn ? (
-                  <Dashboard />
-                ) : (
-                  <LoggedInDashboard/>
-                )}
+                {!isLoggedIn ? <Dashboard /> : <LoggedInDashboard userId={userId} />}
               </div>
             }
           />
