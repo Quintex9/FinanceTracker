@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Registration from "./components/Registration";
 import Dashboard from "./components/Dashboard";
+import LoggedInDashboard from "./components/LoggedInDashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,7 +30,7 @@ function App() {
                 {!isLoggedIn ? (
                   <Dashboard />
                 ) : (
-                  <h2>Welcome to your Finance Dashboard 💰</h2>
+                  <LoggedInDashboard/>
                 )}
               </div>
             }
