@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+import AddTransactionForm from "./AddTransactionForm";
+import TransactionTable from "./TransactionTable";
+import BalanceLineChart from "./BalanceLineChart";
+import IncomePieChart from "./IncomePieChart";
+import ExpensePieChart from "./ExpensePieChart";
+
+// Farby podľa kategórií
+const CATEGORY_COLORS = {
+  "Príjem": "#28a745",   // zelená
+  "Jedlo": "#ff6b6b",    // červená
+  "Zábava": "#ffa502",   // oranžová
+  "Doprava": "#00d4ff",  // modrá
+  "Ostatné": "#9b59b6",  // fialová
+};
+const getCategoryColor = (cat) => CATEGORY_COLORS[cat] || "#6c757d";
 
 export default function LoggedInDashboard({ userId }) {
   const [transactions, setTransactions] = useState([]);
@@ -39,10 +45,11 @@ export default function LoggedInDashboard({ userId }) {
     return <p className="text-center mt-4">Načítavam transakcie...</p>;
   }
 
+  //Add transaction
   const handleAddTransaction = async (e) => {
     e.preventDefault();
     if (!title || !category || !amount || !date)
-      return alert("Vyplň všetky polia! Názov, sumu a dátum!");
+      return alert("Vyplň všetky polia! Názov, kategóriu, sumu a dátum!");
 
     try {
       const res = await fetch("http://localhost:5000/api/transactions", {
@@ -73,6 +80,7 @@ export default function LoggedInDashboard({ userId }) {
     }
   };
 
+  //Delete transaction
   const handleDeleteTransaction = async (id) => {
     if (!window.confirm("Naozaj chceš zmazať túto transakciu?")) return;
 
@@ -83,7 +91,6 @@ export default function LoggedInDashboard({ userId }) {
       });
 
       const data = await res.json();
-
       if (res.ok && data.success) {
         setTransactions(transactions.filter((t) => t.id !== id));
       } else {
@@ -94,6 +101,7 @@ export default function LoggedInDashboard({ userId }) {
     }
   };
 
+  // Data pre grafy
   const balanceData = transactions.map((t, index) => ({
     name: new Date(t.created_at).toLocaleDateString("sk-SK"),
     balance: transactions
@@ -106,9 +114,28 @@ export default function LoggedInDashboard({ userId }) {
     0
   );
 
+  // Rozdelenie podľa príjmov a výdavkov
+  const incomeByCategory = {};
+  const expenseByCategory = {};
+  transactions.forEach((t) => {
+    const amt = parseFloat(t.amount);
+    const key = t.category || "Ostatné";
+    if (amt >= 0) {
+      incomeByCategory[key] = (incomeByCategory[key] || 0) + amt;
+    } else {
+      expenseByCategory[key] = (expenseByCategory[key] || 0) + Math.abs(amt);
+    }
+  });
+
+  const incomePieData = Object.entries(incomeByCategory).map(
+    ([name, value]) => ({ name, value })
+  );
+  const expensePieData = Object.entries(expenseByCategory).map(
+    ([name, value]) => ({ name, value })
+  );
+
   return (
     <div className="container mt-5">
-      {/* Header */}
       <div className="text-center mb-5">
         <h2 className="fw-bold" style={{ color: "#00d4ff" }}>
           💳 Tvoje transakcie
@@ -124,132 +151,28 @@ export default function LoggedInDashboard({ userId }) {
         </h3>
       </div>
 
-      {/* Form Card */}
-      <div
-        className="card shadow-lg border-0 mb-5"
-        style={{ borderRadius: "20px", background: "#1e1e2f" }}
-      >
-        <div className="card-body">
-          <h5 className="text-light text-center mb-4">➕ Pridať transakciu</h5>
-          <form
-            onSubmit={handleAddTransaction}
-            className="d-flex gap-2 justify-content-center"
-          >
-            <input
-              type="text"
-              className="form-control w-25"
-              placeholder="Názov"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <select
-              className="form-control w-25"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-                <option value="">Vyber kategóriu</option>
-                <option value="Príjem">Príjem</option>
-                <option value="Jedlo">Jedlo</option>
-                <option value="Zábava">Zábava</option>
-                <option value="Ostatné">Ostatné</option>
-            </select>
-            <input
-              type="number"
-              className="form-control w-25"
-              placeholder="Suma"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <input
-              type="date"
-              className="form-control w-25"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-            <button type="submit" className="btn btn-info text-white">
-              Pridať
-            </button>
-          </form>
-        </div>
-      </div>
+      <AddTransactionForm
+        title={title} setTitle={setTitle}
+        category={category} setCategory={setCategory}
+        amount={amount} setAmount={setAmount}
+        date={date} setDate={setDate}
+        handleAddTransaction={handleAddTransaction}
+      />
 
-      {/* Transactions Card */}
-      <div
-        className="card shadow-lg border-0 mb-5"
-        style={{ borderRadius: "20px", background: "#1e1e2f" }}
-      >
-        <div className="card-body">
-          <h4 className="card-title text-center text-light mb-4">
-            📑 História transakcií
-          </h4>
-          <div className="table-responsive">
-            <table className="table table-dark table-hover align-middle text-center mb-0">
-              <thead>
-                <tr style={{ background: "#2a2a3d" }}>
-                  <th>Názov</th>
-                  <th>Kategória</th>
-                  <th>Dátum</th>
-                  <th>Suma</th>
-                  <th>Vymazať</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((t) => (
-                  <tr key={t.id}>
-                    <td className="fw-bold">{t.title}</td>
-                    <td className="fw-bold">{t.category}</td>
-                    <td className="text-muted">
-                      {new Date(t.created_at).toLocaleDateString("sk-SK")}
-                    </td>
-                    <td
-                      className="fw-bold"
-                      style={{ color: t.amount < 0 ? "#ff6b6b" : "#4cd964" }}
-                    >
-                      {t.amount} €
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleDeleteTransaction(t.id)}
-                      >
-                        ✖
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <TransactionTable
+        transactions={transactions}
+        handleDeleteTransaction={handleDeleteTransaction}
+      />
 
-      {/* Chart Card */}
-      <div
-        className="card shadow-lg border-0"
-        style={{ borderRadius: "20px", background: "#1e1e2f" }}
-      >
-        <div className="card-body">
-          <h4 className="text-center text-light mb-4">📊 Prehľad zostatku</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={balanceData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-              <XAxis dataKey="name" tick={{ fill: "#aaa" }} />
-              <YAxis tick={{ fill: "#aaa" }} />
-              <Tooltip
-                formatter={(v) => `${v} €`}
-                contentStyle={{ background: "#2a2a3d", border: "none" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="balance"
-                stroke="#00d4ff"
-                strokeWidth={3}
-                dot={{ r: 5, fill: "#00d4ff" }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <BalanceLineChart balanceData={balanceData} />
+
+      {incomePieData.length > 0 && (
+        <IncomePieChart data={incomePieData} getCategoryColor={getCategoryColor} />
+      )}
+
+      {expensePieData.length > 0 && (
+        <ExpensePieChart data={expensePieData} getCategoryColor={getCategoryColor} />
+      )}
     </div>
   );
 }

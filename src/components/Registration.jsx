@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 export default function Registration() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
 
   const handleLogin = () => navigate("/login");
@@ -22,13 +21,10 @@ export default function Registration() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("Registration successful ✅");
-        navigate("/login"); // presmerovanie na login
-      }
-      if (res.status === 500 && data.message.includes("User exists")) {
-        alert("Tento email je už zaregistrovaný ❌");
+        alert("Registrácia úspešná ✅");
+        navigate("/login");
       } else {
-        alert(data.message || "Registration failed ❌");
+        alert(data.message || "Registrácia zlyhala ❌");
       }
     } catch (err) {
       console.error("Error:", err);
@@ -37,42 +33,81 @@ export default function Registration() {
   };
 
   return (
-    <div
-      className="card p-4 shadow-sm mt-4"
-      style={{ maxWidth: "400px", margin: "auto" }}
-    >
-      <h3 className="mb-3">Registration</h3>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Email address</label>
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <p>
-          Máš účet?{" "}
-          <button type="button" className="btn btn-light" onClick={handleLogin}>
-            Prihlás sa
+    <div className="d-flex justify-content-center align-items-center">
+      <div
+        className="p-5 shadow-lg"
+        style={{
+          background: "#1e1e2f",
+          borderRadius: "20px",
+          width: "100%",
+          maxWidth: "400px",
+        }}
+      >
+        <h2 className="text-center mb-4" style={{ color: "#00d4ff" }}>
+         Registrácia
+        </h2>
+
+        <form onSubmit={handleSubmit}>
+          {/* Email */}
+          <div className="mb-3">
+            <label className="form-label text-light">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              style={{ background: "#2a2a3d", border: "none", color: "#fff" }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="mb-3">
+            <label className="form-label text-light">Heslo</label>
+            <input
+              type="password"
+              className="form-control"
+              style={{ background: "#2a2a3d", border: "none", color: "#fff" }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Login link */}
+          <p className="text-center text-muted">
+            Už máš účet?{" "}
+            <span
+              onClick={handleLogin}
+              style={{
+                color: "#00d4ff",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Prihlás sa
+            </span>
+          </p>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="btn w-100"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(0,212,255,1) 0%, rgba(13,110,253,1) 100%)",
+              border: "none",
+              color: "#fff",
+              fontWeight: "bold",
+              borderRadius: "12px",
+              padding: "10px",
+              fontSize: "1rem",
+            }}
+          >
+            Registrovať sa
           </button>
-        </p>
-        <button type="submit" className="btn btn-primary w-100">
-          Register
-        </button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
