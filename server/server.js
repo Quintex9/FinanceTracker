@@ -84,21 +84,21 @@ app.post("/api/login", (req, res) => {
 
 // Check-auth
 app.get("/api/check-auth", (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.json({ loggedIn: false });
+    const token = req.cookies.token;
+    if (!token) return res.json({ loggedIn: false });
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    res.json({ loggedIn: true, user: decoded });
-  } catch (err) {
-    res.json({ loggedIn: false });
-  }
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        res.json({ loggedIn: true, user: decoded });
+    } catch (err) {
+        res.json({ loggedIn: false });
+    }
 });
 
 // Logout
 app.post("/api/logout", (req, res) => {
-  res.clearCookie("token");
-  res.json({ success: true, message: "Logged out" });
+    res.clearCookie("token");
+    res.json({ success: true, message: "Logged out" });
 });
 
 
@@ -106,13 +106,23 @@ app.post("/api/logout", (req, res) => {
 
 // Add
 app.post("/api/transactions", (req, res) => {
-    const { userId, title, amount } = req.body;
+    const { userId, title, amount, created_at } = req.body;
     db.query(
-        "INSERT INTO transactions (user_id, title, amount) VALUES (?, ?, ?)",
-        [userId, title, amount],
+        "INSERT INTO transactions (user_id, title, amount, created_at) VALUES (?, ?, ?, ?)",
+        [userId, title, amount, created_at],
         (err) => {
             if (err) return res.status(500).json({ message: "DB error" });
-            res.json({ success: true, message: "Transaction added" });
+            res.json({
+                success: true,
+                message: "Transaction added",
+                transaction: {
+                    id: result.insertId,
+                    user_id: userId,
+                    title,
+                    amount,
+                    created_at
+                }
+            });
         }
     );
 });
