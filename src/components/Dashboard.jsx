@@ -10,7 +10,6 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
-
   const [transactions] = useState([
     { id: 1, title: "Výplata", amount: 1200, createdAt: "2025-09-01" },
     { id: 2, title: "Nákup potravín", amount: -80, createdAt: "2025-08-01" },
@@ -22,64 +21,99 @@ export default function Dashboard() {
   ]);
 
   const balanceData = transactions.map((t, index) => ({
-  name: new Date(t.createdAt).toLocaleDateString("sk-SK"),
-  balance: transactions.slice(0, index + 1).reduce((acc, tr) => acc + tr.amount, 0),
-}));
+    name: new Date(t.createdAt).toLocaleDateString("sk-SK"),
+    balance: transactions.slice(0, index + 1).reduce((acc, tr) => acc + tr.amount, 0),
+  }));
 
   const balance = transactions.reduce((acc, t) => acc + t.amount, 0);
 
-  // priprava dát pre graf
-  const chartData = transactions.map((t) => ({
-    name: new Date(t.createdAt).toLocaleDateString("sk-SK"),
-    amount: t.amount,
-  }));
-
   return (
-    <div className="container mt-4">
-      <h2 className="text-center text-info mb-3">Vizualizácia dummy dát, pre použitie stránky sa treba prihlásiť/registrovať</h2>
-      <h4 className="text-center mb-4">Zostatok na účte: {balance} €</h4>
-
-      {/* Tabuľka */}
-      <div className="table-responsive mb-5">
-        <table className="table table-striped table-hover align-middle text-center">
-          <thead className="table-light">
-            <tr>
-              <th>Názov</th>
-              <th>Dátum</th>
-              <th>Suma</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((t) => (
-              <tr key={t.id}>
-                <td className="fw-bold">{t.title}</td>
-                <td className="text-muted">
-                  {new Date(t.createdAt).toLocaleDateString("sk-SK")}
-                </td>
-                <td
-                  className="fw-bold"
-                  style={{ color: t.amount < 0 ? "#d9534f" : "#28a745" }}
-                >
-                  {t.amount} €
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="container mt-5">
+      {/* Header */}
+      <div className="text-center mb-5">
+        <h2 className="fw-bold" style={{ color: "#00d4ff" }}>
+          💳 Vizualizácia dummy dát
+        </h2>
+        <p className="text-secondary">
+          Pre použitie stránky sa treba prihlásiť alebo registrovať
+        </p>
+        <h3
+          className="fw-bold mt-3"
+          style={{
+            color: balance >= 0 ? "#28a745" : "#dc3545",
+            fontSize: "1.8rem",
+          }}
+        >
+          Zostatok na účte: {balance} €
+        </h3>
       </div>
 
-      {/* Graf */}
-      <h4 className="text-center mb-3">📊 Prehľad transakcií</h4>
-      <ResponsiveContainer width="100%" height={300}>
-  <LineChart data={balanceData}>
-    <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-    <XAxis dataKey="name" tick={{ fill: "#ddd" }} />
-    <YAxis tick={{ fill: "#ddd" }} />
-    <Tooltip formatter={(v) => `${v} €`} />
-    <Line type="monotone" dataKey="balance" stroke="#0d6efd" strokeWidth={3} dot={{ r: 5 }} />
-  </LineChart>
-</ResponsiveContainer>
+      {/* Transactions Card */}
+      <div
+        className="card shadow-lg border-0 mb-5"
+        style={{ borderRadius: "20px", background: "#1e1e2f" }}
+      >
+        <div className="card-body">
+          <h4 className="card-title text-center text-light mb-4">
+            Posledné transakcie
+          </h4>
+          <div className="table-responsive">
+            <table className="table table-dark table-hover align-middle text-center mb-0">
+              <thead>
+                <tr style={{ background: "#2a2a3d" }}>
+                  <th>Názov</th>
+                  <th>Dátum</th>
+                  <th>Suma</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((t) => (
+                  <tr key={t.id}>
+                    <td className="fw-bold">{t.title}</td>
+                    <td className="text-muted">
+                      {new Date(t.createdAt).toLocaleDateString("sk-SK")}
+                    </td>
+                    <td
+                      className="fw-bold"
+                      style={{ color: t.amount < 0 ? "#ff6b6b" : "#4cd964" }}
+                    >
+                      {t.amount} €
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
+      {/* Chart Card */}
+      <div
+        className="card shadow-lg border-0"
+        style={{ borderRadius: "20px", background: "#1e1e2f" }}
+      >
+        <div className="card-body">
+          <h4 className="text-center text-light mb-4">📊 Prehľad transakcií</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={balanceData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+              <XAxis dataKey="name" tick={{ fill: "#aaa" }} />
+              <YAxis tick={{ fill: "#aaa" }} />
+              <Tooltip
+                formatter={(v) => `${v} €`}
+                contentStyle={{ background: "#2a2a3d", border: "none" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="balance"
+                stroke="#00d4ff"
+                strokeWidth={3}
+                dot={{ r: 5, fill: "#00d4ff" }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }

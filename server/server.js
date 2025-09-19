@@ -106,10 +106,10 @@ app.post("/api/logout", (req, res) => {
 
 // Add
 app.post("/api/transactions", (req, res) => {
-    const { userId, title, amount, created_at } = req.body;
+    const { userId, title, category ,amount, created_at } = req.body;
     db.query(
-        "INSERT INTO transactions (user_id, title, amount, created_at) VALUES (?, ?, ?, ?)",
-        [userId, title, amount, created_at],
+        "INSERT INTO transactions (user_id, title, category, amount, created_at) VALUES (?, ? ,?, ?, ?)",
+        [userId, title, category, amount, created_at],
         (err, result) => {
             if (err) return res.status(500).json({ message: "DB error" });
             res.json({
@@ -119,6 +119,7 @@ app.post("/api/transactions", (req, res) => {
                     id: result.insertId,
                     user_id: userId,
                     title,
+                    category,
                     amount,
                     created_at
                 }
