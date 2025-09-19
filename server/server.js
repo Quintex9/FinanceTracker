@@ -127,9 +127,9 @@ app.post("/api/transactions", (req, res) => {
     );
 });
 
-//Delte
+//Delete
 
-app.delete("/api/trasnactions/:id", (req, res) => {
+app.delete("/api/transactions/:id", (req, res) => {
     const id = req.params.id;
 
     db.query("DELETE FROM transactions WHERE id = ?", [id], (err, result) => {

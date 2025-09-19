@@ -36,7 +36,7 @@ export default function Dashboard() {
 
   return (
     <div className="container mt-4">
-      <h2 className="text-center mb-3">Finance Dashboard 💰</h2>
+      <h2 className="text-center text-info mb-3">Vizualizácia dummy dát, pre použitie stránky sa treba prihlásiť/registrovať</h2>
       <h4 className="text-center mb-4">Zostatok na účte: {balance} €</h4>
 
       {/* Tabuľka */}

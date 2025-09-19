@@ -70,6 +70,29 @@ export default function LoggedInDashboard({ userId }) {
     }
   };
 
+  const handleDeleteTransaction = async (id) => {
+  if (!window.confirm("Naozaj chceš zmazať túto transakciu?")) return;
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/transactions/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      // odstránime transakciu aj zo state
+      setTransactions(transactions.filter((t) => t.id !== id));
+    } else {
+      alert(data.message || "Nepodarilo sa zmazať transakciu!");
+    }
+  } catch (err) {
+    console.error("Chyba pri mazaní transakcie:", err);
+  }
+};
+
+
   const balanceData = transactions.map((t, index) => ({
     name: new Date(t.created_at).toLocaleDateString("sk-SK"),
     balance: transactions
@@ -125,6 +148,7 @@ export default function LoggedInDashboard({ userId }) {
               <th>Názov</th>
               <th>Dátum</th>
               <th>Suma</th>
+              <th>Vymazať</th>
             </tr>
           </thead>
           <tbody>
@@ -139,6 +163,9 @@ export default function LoggedInDashboard({ userId }) {
                   style={{ color: t.amount < 0 ? "#d9534f" : "#28a745" }}
                 >
                   {t.amount} €
+                </td>
+                <td>
+                    <button className="btn btn-danger" onClick={() => handleDeleteTransaction(t.id)}>X</button>
                 </td>
               </tr>
             ))}
