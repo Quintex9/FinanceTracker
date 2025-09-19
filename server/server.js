@@ -127,6 +127,23 @@ app.post("/api/transactions", (req, res) => {
     );
 });
 
+//Delte
+
+app.delete("/api/trasnactions/:id", (req, res) => {
+    const id = req.params.id;
+
+    db.query("DELETE FROM transactions WHERE id = ?", [id], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "DB error" });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "Transaction not found" })
+        }
+
+        res.json({ success: true, message: "Transaction deleted" });
+    });
+
+});
+
 // List
 app.get("/api/transactions/:userId", (req, res) => {
     db.query(

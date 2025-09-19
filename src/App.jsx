@@ -8,7 +8,7 @@ import Dashboard from "./components/Dashboard";
 import LoggedInDashboard from "./components/LoggedInDashboard";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -33,7 +33,13 @@ function App() {
             path="/"
             element={
               <div className="container mt-4">
-                {!isLoggedIn ? <Dashboard /> : <LoggedInDashboard userId={userId} />}
+                {isLoggedIn === null ? (
+                  <p className="text-center">Overujem prihlásenie...</p>
+                ) : isLoggedIn ? (
+                  <LoggedInDashboard userId={userId} />
+                ) : (
+                  <Dashboard />
+                )}
               </div>
             }
           />
