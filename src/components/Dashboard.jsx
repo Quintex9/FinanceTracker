@@ -11,10 +11,10 @@ import {
 
 export default function Dashboard() {
   const [transactions] = useState([
-    { id: 1, title: "Výplata", amount: 1200, createdAt: "2025-09-01" },
-    { id: 2, title: "Nákup potravín", amount: -80, createdAt: "2025-08-01" },
-    { id: 3, title: "Kino", amount: -15, createdAt: "2025-09-05" },
-    { id: 4, title: "Tankovanie", amount: -140, createdAt: "2025-09-11" },
+    { id: 1, title: "Výplata",category: "príjem" , amount: 1200, createdAt: "2025-09-01" },
+    { id: 2, title: "Nákup potravín", category: "jedlo", amount: -80, createdAt: "2025-08-01" },
+    { id: 3, title: "Kino", amount: -15, category: "zábava", createdAt: "2025-09-05" },
+    { id: 4, title: "Tankovanie", amount: -140, category: "doprava", createdAt: "2025-09-11" },
     { id: 5, title: "Zábava", amount: -54, createdAt: "2025-09-15" },
     { id: 6, title: "Nové tenisky", amount: -55, createdAt: "2025-09-20" },
     { id: 7, title: "Pokuta", amount: -100, createdAt: "2025-09-26" },

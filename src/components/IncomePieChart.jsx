@@ -5,7 +5,7 @@ export default function IncomePieChart({ data, getCategoryColor }) {
     <div className="card shadow-lg border-0 mt-5"
       style={{ borderRadius: "20px", background: "#1e1e2f" }}>
       <div className="card-body">
-        <h4 className="text-center text-light mb-4">📈 Príjmy podľa kategórií</h4>
+        <h4 className="text-center text-light mb-4">Príjmy podľa kategórií</h4>
         <ResponsiveContainer width="100%" height={320}>
           <PieChart>
             <Pie

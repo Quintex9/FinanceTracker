@@ -40,3 +40,28 @@
 .read-the-docs {
   color: #888;
 }
+
+:root,
+[data-bs-theme="modern-gray"] {
+  /* Základ */
+  --bs-body-bg: #2f343f;       /* tmavšia šedá ako pozadie */
+  --bs-body-color: #e0e0e0;    /* svetlý text */
+
+  /* Karty a panely */
+  --bs-card-bg: #3a3f4b;       /* o trochu svetlejšia šedá */
+  --bs-card-border-color: #4a4f5c;
+
+  /* Tlačidlá a akcenty */
+  --bs-primary: #4dabf7;       /* moderná modrá */
+  --bs-info: #5bc0de;          /* tyrkysová */
+  --bs-success: #51cf66;       /* zelená */
+  --bs-warning: #fcc419;       /* žltá */
+  --bs-danger: #ff6b6b;        /* červená */
+
+  /* Rámčeky, oddelovače */
+  --bs-border-color: #5c6270;
+
+  /* Inputs */
+  --bs-form-control-bg: #3d424e;
+  --bs-form-control-color: #f1f3f5;
+}

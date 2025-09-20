@@ -24,6 +24,7 @@ export default function Login({ setIsLoggedIn }) {
       if (res.ok && data.success) {
         setIsLoggedIn(true);
         navigate("/");
+        window.location.reload(); // reflesh, inak by to bolo manualne
       } else {
         alert(data.message || "Login failed ❌");
       }

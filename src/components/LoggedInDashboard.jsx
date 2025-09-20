@@ -7,11 +7,11 @@ import ExpensePieChart from "./ExpensePieChart";
 
 // Farby podľa kategórií
 const CATEGORY_COLORS = {
-  "Príjem": "#28a745",   // zelená
-  "Jedlo": "#ff6b6b",    // červená
-  "Zábava": "#ffa502",   // oranžová
-  "Doprava": "#00d4ff",  // modrá
-  "Ostatné": "#9b59b6",  // fialová
+  Príjem: "#28a745", // zelená
+  Jedlo: "#ff6b6b", // červená
+  Zábava: "#ffa502", // oranžová
+  Doprava: "#00d4ff", // modrá
+  Ostatné: "#9b59b6", // fialová
 };
 const getCategoryColor = (cat) => CATEGORY_COLORS[cat] || "#6c757d";
 
@@ -50,6 +50,17 @@ export default function LoggedInDashboard({ userId }) {
     e.preventDefault();
     if (!title || !category || !amount || !date)
       return alert("Vyplň všetky polia! Názov, kategóriu, sumu a dátum!");
+
+    let num = parseFloat(amount);
+
+    if (category === "Príjem" && num <= 0) {
+      alert("Na príjem musíš zadať kladné číslo!");
+      return;
+    }
+    if (category !== "Príjem" && num >= 0) {
+      alert("Na príjem služí kategória príjem!");
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:5000/api/transactions", {
@@ -102,12 +113,14 @@ export default function LoggedInDashboard({ userId }) {
   };
 
   // Data pre grafy
-  const balanceData = transactions.map((t, index) => ({
-    name: new Date(t.created_at).toLocaleDateString("sk-SK"),
-    balance: transactions
-      .slice(0, index + 1)
-      .reduce((acc, tr) => acc + tr.amount, 0),
-  }));
+  const balanceData = [...transactions]
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    .map((t, index, arr) => ({
+      name: new Date(t.created_at).toLocaleDateString("sk-SK"),
+      balance: arr
+        .slice(0, index + 1)
+        .reduce((acc, tr) => acc + parseFloat(tr.amount), 0),
+    }));
 
   const balance = transactions.reduce(
     (acc, t) => acc + parseFloat(t.amount),
@@ -138,7 +151,7 @@ export default function LoggedInDashboard({ userId }) {
     <div className="container mt-5">
       <div className="text-center mb-5">
         <h2 className="fw-bold" style={{ color: "#00d4ff" }}>
-          💳 Tvoje transakcie
+          Tvoje transakcie 💳
         </h2>
         <h3
           className="fw-bold mt-3"
@@ -152,10 +165,14 @@ export default function LoggedInDashboard({ userId }) {
       </div>
 
       <AddTransactionForm
-        title={title} setTitle={setTitle}
-        category={category} setCategory={setCategory}
-        amount={amount} setAmount={setAmount}
-        date={date} setDate={setDate}
+        title={title}
+        setTitle={setTitle}
+        category={category}
+        setCategory={setCategory}
+        amount={amount}
+        setAmount={setAmount}
+        date={date}
+        setDate={setDate}
         handleAddTransaction={handleAddTransaction}
       />
 
@@ -166,12 +183,17 @@ export default function LoggedInDashboard({ userId }) {
 
       <BalanceLineChart balanceData={balanceData} />
 
-      {incomePieData.length > 0 && (
-        <IncomePieChart data={incomePieData} getCategoryColor={getCategoryColor} />
-      )}
-
       {expensePieData.length > 0 && (
-        <ExpensePieChart data={expensePieData} getCategoryColor={getCategoryColor} />
+        <div className="d-flex gap-4 justify-content-center flex-wrap">
+          {expensePieData.length > 0 && (
+            <div style={{ flex: "1 1 400px" }}>
+              <ExpensePieChart
+                data={expensePieData}
+                getCategoryColor={getCategoryColor}
+              />
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
